@@ -1,11 +1,14 @@
 #Importa bibliotecas
-import os
 import socket
 import threading
 from flask import Flask, render_template, jsonify, request
+from flask_cors import CORS
+
 
 # instância do aplicativo Flask
 app = Flask(__name__)
+CORS(app)
+
 
 # Inicializa uma lista de mensagens e um conjunto para os usuários conectados
 messages = []
@@ -87,7 +90,7 @@ def handle_cliente(client_socket):
 def servidor_flask():
     print('Iniciando servidor Flask')
     # Inicia o servidor Flask
-    app.run(host='0.0.0.0', port=int(os.getenv("PORT")), debug=False)
+    app.run(host='0.0.0.0', port=8000, debug=False)
 
 if __name__ == '__main__':
     # Inicia duas threads separadas para executar o servidor Flask e lidar com conexões de clientes
