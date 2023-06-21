@@ -7,7 +7,8 @@ from flask_cors import CORS
 
 # instância do aplicativo Flask
 app = Flask(__name__)
-CORS(app)
+CORS(app,resources={r"/*": {"origins": "*"}})
+
 
 
 # Inicializa uma lista de mensagens e um conjunto para os usuários conectados
