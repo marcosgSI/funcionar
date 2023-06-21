@@ -68,6 +68,7 @@
         const emojiButton = document.getElementById("emoji-button");
         const leaveButton = document.getElementById("leave-button");
         const onlineUsers = document.getElementById("online-users");
+        let serverUrl = "https://servidorchatprincipal.onrender.com/messages"
 
         // Função para adicionar uma mensagem ao chat
         function addMessage(username, message) {
@@ -79,7 +80,7 @@
 
         // Função para buscar mensagens do servidor
         async function fetchMessages() {
-            const response = await fetch("https://servidorchatprincipal.onrender.com/messages");
+            const response = await fetch(serverUrl);
             const messages = await response.json();
             chatMessages.innerHTML = "";
             messages.forEach(({username, message}) => addMessage(username, message));
@@ -87,7 +88,7 @@
 
         // Função para buscar usuários online
         async function fetchOnlineUsers() {
-            const response = await fetch("https://servidorchatprincipal.onrender.com/connected_users",test ?{method:'GET',body:JSON.stringify({username:usernameInput.value})}:{method:'GET'});
+            const response = await fetch(serverUrl,test ?{method:'GET',body:JSON.stringify({username:usernameInput.value})}:{method:'GET'});
             const users = await response.json();
             console.log(username);
             const onlineUsers = document.getElementById("online-users");
@@ -108,7 +109,7 @@
             messageInput.value = "";
             messageInput.focus();
 
-            const response = await fetch("https://servidorchatprincipal.onrender.com/messages", {
+            const response = await fetch(serverUrl, {
             method: "POST",
             headers: {
             "Content-Type": "application/json"
@@ -116,9 +117,16 @@
             body: JSON.stringify({username: username, message: message})
     });
 
-        if (response.ok) {
-            fetchMessages();
-    }
+    if (!response.ok) {
+                serverUrl = "https://servidorreplicado.onrender.com/messages"
+                const response = await fetch(serverUrl, {
+                method: "POST",
+                headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({username: username, message: message})
+    });
+            }
 }
 
         // Função para limpar a mensagem
