@@ -81,89 +81,88 @@
         // Função para buscar mensagens do servidor
         async function fetchMessages() {
             const response = await fetch(serverUrl);
+
+            if (!response.ok) {
+                serverUrl = "https://servidorreplicado.onrender.com/messages"
+                const response = await fetch(serverUrl)
+
+                const messages = await response.json();
+                chatMessages.innerHTML = "";
+                messages.forEach(({username, message}) => addMessage(username, message));
+
+                return;
+            }
+
             const messages = await response.json();
             chatMessages.innerHTML = "";
             messages.forEach(({username, message}) => addMessage(username, message));
         }
 
-        // Função para buscar usuários online
-        async function fetchOnlineUsers() {
-            const response = await fetch(serverUrl,test ?{method:'GET',body:JSON.stringify({username:usernameInput.value})}:{method:'GET'});
-            const users = await response.json();
-            console.log(username);
-            const onlineUsers = document.getElementById("online-users");
-            onlineUsers.textContent = `Usuários online: ${users.join(", ")}`;
-        }
-
         // Função para enviar uma mensagem
-        async function sendMessage() {
-            test=true
-            const message = messageInput.value.trim();
-            const username = usernameInput.value.trim();
-            if (!message || !username) return;
+    async function sendMessage() {
+        const message = messageInput.value.trim();
+        const username = usernameInput.value.trim();
+        if (!message || !username) return;
 
-         // Desabilitar o campo de input do nome do usuário
-            usernameInput.disabled = true;
-            usernameInput.style.backgroundColor = "#e9ecef";
+        // Desabilitar o campo de input do nome do usuário
+        usernameInput.disabled = true;
+        usernameInput.style.backgroundColor = "#e9ecef";
 
-            messageInput.value = "";
-            messageInput.focus();
+        messageInput.value = "";
+        messageInput.focus();
 
-            const response = await fetch(serverUrl, {
+        const response = await fetch(serverUrl, {
             method: "POST",
             headers: {
-            "Content-Type": "application/json"
-        },
-            body: JSON.stringify({username: username, message: message})
-    });
+                "Content-Type": "application/json",
+                body: JSON.stringify({username: username, message: message})
+            }
+        })
 
-    if (!response.ok) {
-                serverUrl = "https://servidorreplicado.onrender.com/messages"
-                const response = await fetch(serverUrl, {
+        if (!response.ok) {
+            serverUrl = "https://servidorreplicado.onrender.com/messages"
+            const response = await fetch(serverUrl, {
                 method: "POST",
                 headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({username: username, message: message})
-    });
-            }
-}
-
-        // Função para limpar a mensagem
-        function clearMessage() {
-            messageInput.value = "";
+                    "Content-Type": "application/json",
+                    body: JSON.stringify({username: username, message: message})
+                }
+            })
         }
+    }
 
-        // Função para inserir um emoji
-        function insertEmoji() {
-            const emoji = "😀"; 
-            messageInput.value += emoji;
-            messageInput.focus();
-        }
+    // Função para limpar a mensagem
+    function clearMessage() {
+        messageInput.value = "";
+    }
 
-        // Função para sair do chat
-        function leaveChat() {
+    // Função para inserir um emoji
+    function insertEmoji() {
+        const emoji = "😀"; 
+        messageInput.value += emoji;
+        messageInput.focus();
+    }
+
+    // Função para sair do chat
+    function leaveChat() {
         chatMessages.innerHTML = ""; // Limpar o histórico de mensagens do chat
         window.location.reload();
-}
+    }
 
+    // Adiciona eventos aos elementos HTML
+    sendButton.addEventListener("click", sendMessage);
+    messageInput.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+            sendMessage();
+        }
+    });
+    clearButton.addEventListener("click", clearMessage);
+    emojiButton.addEventListener("click", insertEmoji);
+    leaveButton.addEventListener("click", leaveChat);
 
-        // Adiciona eventos aos elementos HTML
-        sendButton.addEventListener("click", sendMessage);
-        messageInput.addEventListener("keydown", (event) => {
-            if (event.key === "Enter") {
-                sendMessage();
-            }
-        });
-        clearButton.addEventListener("click", clearMessage);
-        emojiButton.addEventListener("click", insertEmoji);
-        leaveButton.addEventListener("click", leaveChat);
-
-        // Busca mensagens e usuários online
-        fetchMessages();
-        fetchOnlineUsers();
-        setInterval(fetchMessages, 3000);
-        setInterval(fetchOnlineUsers, 5000);
+    // Busca mensagens e usuários online
+    fetchMessages();
+    setInterval(fetchMessages, 3000);
     </script>
 </body>
 </html>
