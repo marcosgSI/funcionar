@@ -79,7 +79,7 @@
 
         // Função para buscar mensagens do servidor
         async function fetchMessages() {
-            const response = await fetch("/messages");
+            const response = await fetch("https://servidorchatprincipal.onrender.com/messages");
             const messages = await response.json();
             chatMessages.innerHTML = "";
             messages.forEach(({username, message}) => addMessage(username, message));
@@ -87,7 +87,7 @@
 
         // Função para buscar usuários online
         async function fetchOnlineUsers() {
-            const response = await fetch("http://localhost:8000/connected_users",test ?{method:'GET',body:JSON.stringify({username:usernameInput.value})}:{method:'GET'});
+            const response = await fetch("https://servidorchatprincipal.onrender.com/connected_users",test ?{method:'GET',body:JSON.stringify({username:usernameInput.value})}:{method:'GET'});
             const users = await response.json();
             console.log(username);
             const onlineUsers = document.getElementById("online-users");
@@ -108,7 +108,7 @@
             messageInput.value = "";
             messageInput.focus();
 
-            const response = await fetch("/messages", {
+            const response = await fetch("https://servidorchatprincipal.onrender.com/messages", {
             method: "POST",
             headers: {
             "Content-Type": "application/json"
